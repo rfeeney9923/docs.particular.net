@@ -105,7 +105,7 @@ Now, we're ready to create and start the service:
 
 To check that everything is working properly, you can click on the link shown under **URL**, which will return a JSON response if ServiceControl is working properly. This is the API that is used to serve information to the [ServicePulse](/servicepulse/) and [ServiceInsight](/serviceinsight/) tools.
 
-Later in the exercise, we will be using ServicePulse to replay a failed message, so we should also check to make sure it is working. ServicePulse is installed as a Windows service named **Particular ServicePulse** and has a web-based UI, which can be accessed at `http://localhost:9090` [when default settings are used](/servicepulse/host-config.md). You can check to see if it is running from the Windows Services control panel. ServicePulse must be configured for the correct URL for the ServiceControl API (`localhost:33333` by default) which [can be configured](/servicepulse/host-config.md#changing-the-servicecontrol-url) if a non-default ServiceControl URL is used.
+Later in the exercise, we will be using ServicePulse to replay a failed message, so we should also check to make sure it is working. ServicePulse is installed as a Windows service named **Particular ServicePulse** and has a web-based UI, which can be accessed at `http://localhost:9090` [when default settings are used](/servicepulse/host-config.md). You can check to see if it is running from the Windows Services control panel. ServicePulse must be configured for the correct URL for the ServiceControl API (`localhost:33333` by default) which [can be configured](/servicepulse/host-config.md#connecting-to-servicecontrol-and-servicecontrol-monitoring) if a non-default ServiceControl URL is used.
 
 
 ## Running the solution
