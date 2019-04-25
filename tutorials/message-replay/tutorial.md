@@ -17,7 +17,7 @@ downloadbutton
 
 ## Project Structure
 
-The solution is similar to the one built in [NServiceBus Step-by-step](/tutorials/nservicebus-step-by-step/), containing five projects. The **ClientUI**, **Sales**, **Billing**, and **Shipping** projects are [endpoints](/nservicebus/endpoints/) that communicate with each other using NServiceBus messages.
+The solution contains six projects. Similar to the one built in [NServiceBus Step-by-step](/tutorials/nservicebus-step-by-step/), the **ClientUI**, **Sales**, **Billing**, and **Shipping** projects are [endpoints](/nservicebus/endpoints/) that communicate with each other using NServiceBus messages. In addition, this tutorial introduces the **PlatformTools** project which provides and launches a portable version of ServiceControl and ServicePulse for use during this tutorial.
 
 The **ClientUI** endpoint mimics a web application and is an entry point in our system. The **Sales**, **Billing**, and **Shipping** endpoints contain business logic related to processing and fulfilling orders. Each endpoint references the **Messages** assembly, which contains the definitions of messages as [POCO classes](https://en.wikipedia.org/wiki/Plain_old_CLR_object).
 
@@ -26,7 +26,6 @@ As shown in the diagram, the **ClientUI** endpoint sends a **PlaceOrder** comman
 ![Project Diagram](/tutorials/nservicebus-step-by-step/4-publishing-events/diagram.svg)
 
 INFO: In a real system, the **Shipping** endpoint should be able to take some action once it receives both an `OrderPlaced` and `OrderBilled` event for the same order. That is a use case for a [Saga](/nservicebus/sagas/) and is outside of the scope of this tutorial.
-
 
 ## Production-ready message transport
 
@@ -107,10 +106,9 @@ To check that everything is working properly, you can click on the link shown un
 
 Later in the exercise, we will be using ServicePulse to replay a failed message, so we should also check to make sure it is working. ServicePulse is installed as a Windows service named **Particular ServicePulse** and has a web-based UI, which can be accessed at `http://localhost:9090` [when default settings are used](/servicepulse/host-config.md). You can check to see if it is running from the Windows Services control panel. ServicePulse must be configured for the correct URL for the ServiceControl API (`localhost:33333` by default) which [can be configured](/servicepulse/host-config.md#connecting-to-servicecontrol-and-servicecontrol-monitoring) if a non-default ServiceControl URL is used.
 
-
 ## Running the solution
 
-The solution is configured to have [multiple startup projects](https://msdn.microsoft.com/en-us/library/ms165413.aspx), so when you run the solution it should open four console applications, one for each messaging endpoint.
+The solution is configured to have [multiple startup projects](https://msdn.microsoft.com/en-us/library/ms165413.aspx), so when you run the solution it should open a console window for each messaging endpoint, a console window for the Particular Platform tools, and a browser window for the ServicePulse application.
 
 In the **ClientUI** application, press <kbd>P</kbd> to place an order, and watch what happens in other windows.
 
@@ -120,7 +118,6 @@ It may happen too quickly to see, but the `PlaceOrder` command will be sent to t
 INFO  Shipping.OrderPlacedHandler Received OrderPlaced, OrderId = 96dfd084-2bb0-46c3-b939-046e3b911102 - Should we ship now?
 INFO  Shipping.OrderBilledHandler Received OrderBilled, OrderId = 96dfd084-2bb0-46c3-b939-046e3b911102 - Should we ship now?
 ```
-
 
 ## Throwing an exception
 
@@ -143,14 +140,20 @@ System.Exception: BOOM
    at < stack trace>
 ```
 
+You may have noticed the **Sales** endpoint did not peform any delayed retries. This is because they have been [disabled](/nservicebus/recoverability/configure-delayed-retries.md) in the **Sales** endpoint's **Program.cs** file:
+
+snippet: NoDelayedRetries	
+
+Since we are going to be causing a lot of messages to fail in this exercise, we'd prefer not to wait around for several rounds of delayed retries to complete.
+
 
 ### Replay a message
 
-Because we installed ServiceControl and ServicePulse earlier, we can attempt to replay a message:
+Using ServiceControl and ServicePulse we can attempt to replay a message:
 
  1. Fix the **Sales** endpoint by commenting the `throw` statement.
  1. Run the solution.
- 1. Open ServicePulse at `http://localhost:9090` and navigate to the **Failed Messages** page. Note how similar messages are grouped together for easier handling.
+ 1. Switch to the ServicePulse browser window and navigate to the **Failed Messages** page. Note how similar messages are grouped together for easier handling.
     ![Failed Message Groups](failed-message-groups.png)
  1. Click anywhere in a message group box to see the individual failed messages in the group, including the exception message.
     ![Failed Message Details](failed-message-details.png)
@@ -160,16 +163,9 @@ Because we installed ServiceControl and ServicePulse earlier, we can attempt to 
 
 When the message is replayed in **Sales**, each endpoint picks up right where it left off. You should be able to see how useful this capability will be when failures happen in your real-life systems.
 
-{{NOTE:
-Our solution currently uses [in-memory persistence](/persistence/in-memory.md) to store subscription information. Because of this, if you restart only the Sales endpoint while the others continue to run, it will not know where to publish messages and the system will not work as intended. When using a durable persistence, this will not be an issue. When testing with in-memory persistence, restart the entire system so that subscription messages are resent as each endpoint starts up.
-
-For more details see [Persistence in NServiceBus](/persistence/).
-}}
-
-
 ## Summary
 
-In this tutorial, we saw how to set up the Particular Service Platform tools ServiceControl and ServicePulse to replay a failed message. With this ability, we can see the details of failed messages in ServicePulse and begin to troubleshoot what went wrong.
+In this tutorial, we saw how to use the Particular Service Platform tools ServiceControl and ServicePulse to replay a failed message. With this ability, we can see the details of failed messages in ServicePulse and begin to troubleshoot what went wrong.
 
 Perhaps the message had a previously unexpected input value which caused the bug to go undetected until the code entered production. With this knowledge in hand, we can go fix the code to validate these inputs or take some other sort of corrective action. Once the new code is deployed with the fix, we can replay the message and everything will flow through the system as if the error had never happened.
 
