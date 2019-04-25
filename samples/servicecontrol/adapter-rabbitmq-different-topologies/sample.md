@@ -23,7 +23,7 @@ This sample shows how to configure ServiceControl to monitor endpoints and retry
    * Use default `Particular.ServiceControl` as the instance name (ensure there is no other instance of SC running with the same name).
    * Specify `host=localhost` as a connection string. ServiceControl Management Utility will automatically create queues and exchanges on the broker.
 
-NOTE: If other ServiceControl instances have been running on this machine, it's necessary to specify a non-default instance name and port number. [Adjust ServicePulse settings](/servicepulse/host-config.md#changing-the-servicecontrol-url) accordingly to point to this location.
+include: configuring-sc-connections
  
  4. Ensure the `ServiceControl` process is running before running the sample.
  5. [Install ServicePulse](/servicepulse/installation.md)
