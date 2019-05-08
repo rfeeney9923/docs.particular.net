@@ -1,5 +1,5 @@
 ---
-title: Configure the URI
+title: Configure Monitoring instance URI
 summary: How to configure a Monitoring instance to be exposed through a custom hostname and IP port
 reviewed: 2017-07-29
 redirects:
@@ -25,6 +25,4 @@ ServiceControl Management will then validate the settings changes and restart th
 
 ### Updating ServicePulse Configuration to Monitoring instance Custom Hostname
 
- 1. Update the ServicePulse configuration file to access the updated Monitoring instance hostname & port number. By default, the ServicePulse configuration file is located in `[Program Files]\Particular Software\ServicePulse\app\config.js`.
- 1. Update the value of the `monitoring_urls` parameter to the specified Monitoring instance hostname and IP port number.
- 1. When next accessing ServicePulse, make sure to refresh the browser cache to allow ServicePulse to access the updated configuration settings.
+Refer to the [ServicePulse documention](/servicepulse/host-config.md#configuring-connections-via-the-servicepulse-ui) for guidance on how to change connections configuration in ServicePulse.
